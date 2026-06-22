@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StayOS — Hotel Intelligence Platform</title>
+  <meta name="description" content="StayOS — The AI-native hotel management platform. WhatsApp-first, visually stunning, built for modern Indian hospitality." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,300..900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Custom cursor -->
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- Noise overlay -->
+  <div class="noise-overlay" aria-hidden="true"></div>
+
+  <!-- Ambient orbs -->
+  <div class="ambient" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- App Shell -->
+  <div class="app-shell" id="appShell">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-inner">
+
+        <div class="sidebar-brand">
+          <div class="brand-logo">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <rect width="32" height="32" rx="10" fill="url(#bg)"/>
+              <path d="M8 23V12.5L16 8L24 12.5V23H19V17H13V23H8Z" fill="white" opacity="0.95"/>
+              <defs>
+                <linearGradient id="bg" x1="0" y1="0" x2="32" y2="32">
+                  <stop stop-color="#00C896"/>
+                  <stop offset="1" stop-color="#6D28D9"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-name">StayOS</span>
+            <span class="brand-sub">Hotel Intelligence</span>
+          </div>
+          <button class="sidebar-pin" id="sidebarPin" aria-label="Pin sidebar">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+
+        <div class="property-switcher" id="propertySwitcher">
+          <div class="property-icon">🏔️</div>
+          <div class="property-details">
+            <span class="property-name">Himalayan Grove</span>
+            <span class="property-meta">Manali · 18 rooms · Live</span>
+          </div>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:0.4"><polyline points="6 9 12 15 18 9"/></svg>
+          <span class="live-pulse"></span>
+        </div>
+
+        <nav class="nav" role="navigation">
+          <div class="nav-group">
+            <span class="nav-label">OVERVIEW</span>
+            <button class="nav-btn active" data-view="dashboard" id="nav-dashboard">
+              <span class="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+              </span>
+              <span class="nav-text">Dashboard</span>
+              <span class="nav-chip green">Live</span>
+            </button>
+            <button class="nav-btn" data-view="calendar" id="nav-calendar">
+              <span class="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </span>
+              <span class="nav-text">Booking Calendar</span>
+            </button>
+            <button class="nav-btn" data-view="guests" id="nav-guests">
+              <span class="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </span>
+              <span class="nav-text">Guest CRM</span>
+              <span class="nav-chip teal">128</span>
+            </button>
+          </div>
+
+          <div class="nav-group">
+            <span class="nav-label">AI LAYER</span>
+            <button class="nav-btn" data-view="whatsapp" id="nav-whatsapp">
+              <span class="nav-icon ai-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </span>
+              <span class="nav-text">WhatsApp Concierge</span>
+              <span class="nav-chip orange">2 urgent</span>
+            </button>
+            <button class="nav-btn" data-view="pricing" id="nav-pricing">
+              <span class="nav-icon ai-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </span>
+              <span class="nav-text">Dynamic Pricing</span>
+              <span class="nav-chip purple">AI</span>
+            </button>
+          </div>
+
+          <div class="nav-group">
+            <span class="nav-label">OPERATIONS</span>
+            <button class="nav-btn" data-view="housekeeping" id="nav-housekeeping">
+              <span class="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              </span>
+              <span class="nav-text">Housekeeping</span>
+              <span class="nav-chip red">5</span>
+            </button>
+            <button class="nav-btn" data-view="billing" id="nav-billing">
+              <span class="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              </span>
+              <span class="nav-text">Billing & GST</span>
+            </button>
+            <button class="nav-btn" data-view="analytics" id="nav-analytics">
+              <span class="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              </span>
+              <span class="nav-text">Analytics</span>
+            </button>
+            <button class="nav-btn" data-view="settings" id="nav-settings">
+              <span class="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              </span>
+              <span class="nav-text">Settings</span>
+            </button>
+          </div>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="user-card" id="userCard">
+            <div class="user-ava">VK</div>
+            <div class="user-details">
+              <span class="user-name">Vansh Kapoor</span>
+              <span class="user-role">Owner · Pro Plan</span>
+            </div>
+            <div class="user-status"></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── MAIN ── -->
+    <main class="main" id="mainArea">
+
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-btn" id="menuBtn" aria-label="Menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="breadcrumb">
+            <span class="bc-root">StayOS</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:0.3"><polyline points="9 18 15 12 9 6"/></svg>
+            <span class="bc-current" id="bcCurrent">Dashboard</span>
+          </div>
+        </div>
+        <div class="topbar-center">
+          <div class="search-bar" id="searchBar" role="search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Search rooms, guests, bookings…" id="globalSearch" aria-label="Global search" />
+            <kbd>⌘K</kbd>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="date-chip">
+            <span class="date-dot"></span>
+            <span>Fri, 20 Jun 2026</span>
+          </div>
+          <button class="tb-icon-btn" id="notifBtn" aria-label="Notifications">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="tb-badge">3</span>
+          </button>
+          <button class="cta-btn magnetic-btn" id="addBookingBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Booking
+          </button>
+        </div>
+      </header>
+
+      <!-- Views -->
+      <div class="views" id="viewsWrap">
+
+        <!-- ══════════════════════════════
+             DASHBOARD
+        ══════════════════════════════ -->
+        <section class="view active" id="view-dashboard">
+          <div class="page-hero">
+            <div>
+              <h1 class="page-title">Good evening, Vansh<span class="serif-em">.</span></h1>
+              <p class="page-sub">Himalayan Grove is running at <strong style="color:var(--teal)">78% occupancy</strong> tonight — above the Manali average.</p>
+            </div>
+            <div class="hero-actions">
+              <button class="ghost-btn" onclick="navigate('analytics')">View Report ↗</button>
+            </div>
+          </div>
+
+          <!-- KPI Bento -->
+          <div class="bento" id="bentoDash">
+            <!-- Big occupancy card -->
+            <div class="bento-card span-2 kpi-hero tilt-card" data-tilt>
+              <div class="kpi-hero-bg"></div>
+              <div class="kpi-hero-content">
+                <div class="kpi-eyebrow">Live Occupancy</div>
+                <div class="kpi-mega" id="occupancyCount">78<span>%</span></div>
+                <div class="kpi-trend up">↑ 6% vs last week</div>
+                <div class="kpi-sub-row">
+                  <div class="kpi-mini"><span>14/18</span><small>rooms occupied</small></div>
+                  <div class="kpi-mini"><span style="color:var(--amber)">2</span><small>checkouts today</small></div>
+                  <div class="kpi-mini"><span style="color:var(--teal)">7</span><small>check-ins today</small></div>
+                </div>
+              </div>
+              <div class="kpi-hero-chart">
+                <canvas id="heroOccChart" width="180" height="80"></canvas>
+              </div>
+            </div>
+
+            <!-- ADR card -->
+            <div class="bento-card kpi-stat tilt-card" data-tilt>
+              <div class="stat-label">Average Daily Rate</div>
+              <div class="stat-val">₹8,340</div>
+              <div class="stat-delta up">↑ ₹420</div>
+              <div class="stat-spark"><canvas id="spark1" width="100" height="36"></canvas></div>
+              <div class="stat-icon" style="--ic:#F5A623">₹</div>
+            </div>
+
+            <!-- RevPAR card -->
+            <div class="bento-card kpi-stat tilt-card" data-tilt>
+              <div class="stat-label">RevPAR</div>
+              <div class="stat-val">₹6,505</div>
+              <div class="stat-delta up">↑ 11% MoM</div>
+              <div class="stat-spark"><canvas id="spark2" width="100" height="36"></canvas></div>
+              <div class="stat-icon" style="--ic:#7C3AED">◈</div>
+            </div>
+
+            <!-- WhatsApp AI card -->
+            <div class="bento-card wa-card ai-glow-card tilt-card" data-tilt>
+              <div class="wa-card-header">
+                <span class="ai-pill">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  AI Concierge
+                </span>
+                <span class="wa-live-badge">24 threads</span>
+              </div>
+              <div class="wa-triple">
+                <div class="wa-num"><span class="wa-big">24</span><small>Total msgs</small></div>
+                <div class="wa-num"><span class="wa-big teal">22</span><small>AI resolved</small></div>
+                <div class="wa-num"><span class="wa-big amber">2</span><small>Human needed</small></div>
+              </div>
+              <div class="wa-bar-wrap">
+                <div class="wa-bar-fill" style="width:92%"></div>
+                <span class="wa-bar-label">92% AI resolution rate</span>
+              </div>
+            </div>
+
+            <!-- Room status grid -->
+            <div class="bento-card room-grid-card span-2">
+              <div class="card-head">
+                <h2>Room Status</h2>
+                <span class="live-badge"><span class="live-dot"></span>Live</span>
+              </div>
+              <div class="room-mosaic" id="roomMosaic"></div>
+            </div>
+
+            <!-- Activity feed -->
+            <div class="bento-card activity-card">
+              <div class="card-head">
+                <h2>Activity</h2>
+                <button class="ghost-mini">All →</button>
+              </div>
+              <div class="activity-list" id="activityList"></div>
+            </div>
+
+            <!-- Revenue chart -->
+            <div class="bento-card chart-card span-3">
+              <div class="card-head">
+                <h2>Revenue — Last 7 Days</h2>
+                <div class="legend-row-inner">
+                  <span><span class="ld" style="background:var(--teal)"></span>Direct</span>
+                  <span><span class="ld" style="background:var(--purple)"></span>OTA</span>
+                </div>
+              </div>
+              <div class="chart-wrap" style="height:140px"><canvas id="revChart7"></canvas></div>
+            </div>
+
+            <!-- Checkout today -->
+            <div class="bento-card checkout-card">
+              <div class="card-head">
+                <h2>Checkouts Today</h2>
+                <span class="count-pill">4</span>
+              </div>
+              <div class="co-list" id="coList"></div>
+            </div>
+
+          </div><!-- /bento -->
+        </section>
+
+        <!-- ══════════════════════════════
+             BOOKING CALENDAR
+        ══════════════════════════════ -->
+        <section class="view" id="view-calendar">
+          <div class="page-hero">
+            <div>
+              <h1 class="page-title">Booking Calendar</h1>
+              <p class="page-sub">Visual room × date grid. Click any cell to book, click a reservation to manage.</p>
+            </div>
+            <div class="hero-actions">
+              <button class="ghost-btn" id="calPrev">← Prev</button>
+              <span class="month-pill" id="calMonthLabel">June 2026</span>
+              <button class="ghost-btn" id="calNext">Next →</button>
+              <button class="cta-btn magnetic-btn" id="addCalBooking">+ New Booking</button>
+            </div>
+          </div>
+
+          <div class="cal-legend">
+            <span><span class="cl" style="background:var(--teal)"></span>Confirmed (Direct)</span>
+            <span><span class="cl" style="background:var(--amber)"></span>Pending</span>
+            <span><span class="cl" style="background:var(--purple)"></span>OTA</span>
+            <span><span class="cl" style="background:var(--red)"></span>Blocked / OOO</span>
+          </div>
+
+          <div class="cal-wrap glass-panel">
+            <div class="cal-head" id="calHead"></div>
+            <div class="cal-body" id="calBody"></div>
+          </div>
+
+          <div class="booking-panel glass-panel" id="bookingPanel" style="display:none">
+            <div class="bp-header">
+              <h3 id="bpGuestName"></h3>
+              <button class="close-btn" id="closeBP">✕</button>
+            </div>
+            <div id="bpBody"></div>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════
+             GUEST CRM
+        ══════════════════════════════ -->
+        <section class="view" id="view-guests">
+          <div class="page-hero">
+            <div>
+              <h1 class="page-title">Guest CRM</h1>
+              <p class="page-sub">128 guests · WhatsApp opt-ins · stay history · smart segments</p>
+            </div>
+            <div class="hero-actions">
+              <div class="search-pill">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" placeholder="Search by name, email…" id="guestSearch" />
+              </div>
+              <button class="cta-btn magnetic-btn">+ Add Guest</button>
+            </div>
+          </div>
+          <div class="crm-split">
+            <div class="crm-table-wrap glass-panel">
+              <table class="crm-table" id="crmTable">
+                <thead>
+                  <tr><th>Guest</th><th>Last Stay</th><th>Stays</th><th>WhatsApp</th><th>Segment</th><th>Total Spent</th><th></th></tr>
+                </thead>
+                <tbody id="crmTbody"></tbody>
+              </table>
+            </div>
+            <div class="crm-profile glass-panel" id="crmProfile">
+              <div class="profile-empty" id="profileEmpty">
+                <div class="profile-empty-icon">👤</div>
+                <p>Select a guest to view their full profile</p>
+              </div>
+              <div class="profile-detail" id="profileDetail" style="display:none"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════
+             WHATSAPP AI CONCIERGE
+        ══════════════════════════════ -->
+        <section class="view" id="view-whatsapp">
+          <div class="page-hero">
+            <div>
+              <h1 class="page-title"><span class="ai-pill-inline">AI</span> WhatsApp Concierge</h1>
+              <p class="page-sub">AI handles 92% of guest queries. Human escalation always available.</p>
+            </div>
+            <div class="hero-actions">
+              <div class="wa-status-badge">
+                <span class="live-dot"></span>
+                Connected · Interakt · 24 active threads
+              </div>
+            </div>
+          </div>
+          <div class="wa-layout">
+            <div class="wa-threads glass-panel" id="waThreads"></div>
+            <div class="wa-chat glass-panel" id="waChat">
+              <div class="wa-chat-top" id="waChatTop"></div>
+              <div class="wa-msgs" id="waMsgs"></div>
+              <div class="wa-compose">
+                <div class="ai-toggle-row">
+                  <label class="toggle"><input type="checkbox" id="aiToggle" checked/><span class="track"></span></label>
+                  <span class="toggle-label">AI Mode Active</span>
+                  <span class="ai-pill" style="font-size:10px">Claude 3.5</span>
+                </div>
+                <div class="compose-row">
+                  <input class="compose-input" id="composeInput" type="text" placeholder="Type a reply or let AI handle it…"/>
+                  <button class="send-btn magnetic-btn" id="sendBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="wa-info glass-panel" id="waInfo"></div>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════
+             DYNAMIC PRICING
+        ══════════════════════════════ -->
+        <section class="view" id="view-pricing">
+          <div class="page-hero">
+            <div>
+              <h1 class="page-title"><span class="ai-pill-inline">AI</span> Dynamic Pricing</h1>
+              <p class="page-sub">Rule-based engine · ML model ready at 6 months data · Current: +8–12% RevPAR lift projected</p>
+            </div>
+            <div class="hero-actions">
+              <span class="mode-tag">Rule-based v1</span>
+              <button class="cta-btn magnetic-btn" onclick="showToast('success','Rates Applied!','AI-suggested rates pushed to all OTAs and your booking engine.')">Apply AI Rates</button>
+            </div>
+          </div>
+          <div class="pricing-bento">
+            <div class="bento-card span-3 glass-panel">
+              <div class="card-head">
+                <h2>AI Rate Recommendations — Next 14 Days</h2>
+                <div class="legend-row-inner">
+                  <span><span class="ld" style="background:#475569"></span>Current</span>
+                  <span><span class="ld" style="background:var(--teal)"></span>AI Suggested</span>
+                </div>
+              </div>
+              <div class="chart-wrap" style="height:180px"><canvas id="pricingChartCanvas"></canvas></div>
+            </div>
+            <div class="bento-card glass-panel">
+              <div class="card-head"><h2>Pricing Signals</h2><span class="ai-pill" style="font-size:10px">AI</span></div>
+              <div id="pricingSignals"></div>
+            </div>
+            <div class="bento-card span-2 glass-panel">
+              <div class="card-head"><h2>Room Type Rates</h2></div>
+              <div id="rateTableWrap"></div>
+            </div>
+            <div class="bento-card glass-panel">
+              <div class="card-head"><h2>Competitor Rates</h2></div>
+              <div id="compRates"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════
+             HOUSEKEEPING
+        ══════════════════════════════ -->
+        <section class="view" id="view-housekeeping">
+          <div class="page-hero">
+            <div>
+              <h1 class="page-title">Housekeeping</h1>
+              <p class="page-sub">Drag & drop tasks · Real-time room status · Staff mobile app synced</p>
+            </div>
+            <div class="hero-actions">
+              <button class="cta-btn magnetic-btn">+ Assign Task</button>
+            </div>
+          </div>
+          <div class="kanban" id="kanban"></div>
+        </section>
+
+        <!-- ══════════════════════════════
+             BILLING & GST
+        ══════════════════════════════ -->
+        <section class="view" id="view-billing">
+          <div class="page-hero">
+            <div>
+              <h1 class="page-title">Billing & GST</h1>
+              <p class="page-sub">GST-compliant invoices · e-Invoicing API (ClearTax) · UPI / Card / Cash tracking</p>
+            </div>
+            <div class="hero-actions">
+              <button class="cta-btn magnetic-btn" id="newInvoiceBtn">+ New Invoice</button>
+            </div>
+          </div>
+          <div class="billing-bento">
+            <div class="bento-card glass-panel billing-summary">
+              <div class="card-head"><h2>June 2026</h2></div>
+              <div class="billing-stats" id="billingStats"></div>
+            </div>
+            <div class="bento-card span-2 glass-panel">
+              <div class="card-head"><h2>Invoices</h2></div>
+              <div class="inv-list" id="invList"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════
+             ANALYTICS
+        ══════════════════════════════ -->
+        <section class="view" id="view-analytics">
+          <div class="page-hero">
+            <div>
+              <h1 class="page-title">Analytics</h1>
+              <p class="page-sub">Occupancy · Revenue · Booking sources · OTA commission savings</p>
+            </div>
+            <div class="hero-actions">
+              <div class="period-switcher">
+                <button class="period-btn active" data-p="7d">7D</button>
+                <button class="period-btn" data-p="30d">30D</button>
+                <button class="period-btn" data-p="90d">90D</button>
+              </div>
+            </div>
+          </div>
+          <div class="analytics-bento">
+            <div class="bento-card span-2 glass-panel">
+              <div class="card-head"><h2>Occupancy Trend</h2></div>
+              <div class="chart-wrap" style="height:180px"><canvas id="occTrendChart"></canvas></div>
+            </div>
+            <div class="bento-card glass-panel">
+              <div class="card-head"><h2>Booking Sources</h2></div>
+              <div class="chart-wrap" style="height:180px"><canvas id="srcChart"></canvas></div>
+            </div>
+            <div class="bento-card span-2 glass-panel">
+              <div class="card-head"><h2>ADR vs RevPAR</h2></div>
+              <div class="chart-wrap" style="height:180px"><canvas id="adrChart"></canvas></div>
+            </div>
+            <div class="bento-card glass-panel ai-glow-card tilt-card" data-tilt>
+              <div class="card-head"><h2>OTA Commission Saved</h2></div>
+              <div class="savings-hero">
+                <div class="savings-num">₹47,320</div>
+                <p class="savings-desc">Saved this month by routing bookings direct via StayOS</p>
+                <div class="savings-progress">
+                  <div class="savings-fill" style="width:68%"></div>
+                </div>
+                <div class="savings-label">68% Direct · 32% OTA</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════
+             SETTINGS
+        ══════════════════════════════ -->
+        <section class="view" id="view-settings">
+          <div class="page-hero">
+            <div>
+              <h1 class="page-title">Settings</h1>
+              <p class="page-sub">Hotel profile · Integrations · Team · WhatsApp AI config</p>
+            </div>
+          </div>
+          <div class="settings-bento">
+            <div class="bento-card glass-panel">
+              <div class="card-head"><h2>Hotel Profile</h2></div>
+              <div class="settings-form" id="settingsForm"></div>
+            </div>
+            <div class="bento-card glass-panel">
+              <div class="card-head"><h2>Integrations</h2></div>
+              <div id="integList"></div>
+            </div>
+            <div class="bento-card glass-panel">
+              <div class="card-head"><h2>Team & Roles</h2></div>
+              <div id="teamList"></div>
+              <button class="ghost-btn" style="width:100%;margin-top:12px">+ Invite Member</button>
+            </div>
+            <div class="bento-card glass-panel ai-glow-card">
+              <div class="card-head">
+                <h2><span class="ai-pill-inline">AI</span> WhatsApp Config</h2>
+                <label class="toggle"><input type="checkbox" checked/><span class="track"></span></label>
+              </div>
+              <div class="wa-config-form" id="waConfigForm"></div>
+            </div>
+          </div>
+        </section>
+
+      </div><!-- /views -->
+    </main>
+  </div><!-- /app-shell -->
+
+  <!-- ── NEW BOOKING MODAL ── -->
+  <div class="modal-backdrop" id="bookingModal" style="display:none" role="dialog" aria-modal="true" aria-label="New Booking">
+    <div class="modal glass-panel">
+      <div class="modal-head">
+        <h2>New Booking</h2>
+        <button class="close-btn" id="closeModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <label class="field"><span>Guest Name</span><input class="fi" type="text" placeholder="Full name" id="bkName"/></label>
+          <label class="field"><span>WhatsApp Number</span><input class="fi" type="tel" placeholder="+91 98XXXXXXXX" id="bkPhone"/></label>
+        </div>
+        <div class="form-row">
+          <label class="field"><span>Room Type</span>
+            <select class="fi" id="bkRoom">
+              <option>Deluxe Mountain View — ₹8,500/night</option>
+              <option>Premium Suite — ₹12,000/night</option>
+              <option>Standard Room — ₹6,800/night</option>
+              <option>Cozy Cottage — ₹7,200/night</option>
+            </select>
+          </label>
+          <label class="field"><span>Booking Source</span>
+            <select class="fi" id="bkSource">
+              <option>Direct (StayOS Widget)</option>
+              <option>Booking.com</option>
+              <option>MakeMyTrip</option>
+              <option>Walk-in</option>
+            </select>
+          </label>
+        </div>
+        <div class="form-row">
+          <label class="field"><span>Check-in</span><input class="fi" type="date" id="bkIn"/></label>
+          <label class="field"><span>Check-out</span><input class="fi" type="date" id="bkOut"/></label>
+        </div>
+        <div class="form-row">
+          <label class="field"><span>Rate / Night (₹)</span><input class="fi" type="number" value="8500" id="bkRate"/></label>
+          <label class="field"><span>Guests</span><input class="fi" type="number" value="2" id="bkGuests"/></label>
+        </div>
+        <div class="modal-total">
+          <span>Total Estimate</span>
+          <span class="modal-total-val" id="modalTotal">₹0</span>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="ghost-btn" id="cancelModal">Cancel</button>
+        <button class="cta-btn magnetic-btn" id="confirmBooking">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Confirm & Send WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TOASTS ── -->
+  <div class="toast-stack" id="toastStack" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
