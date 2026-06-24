@@ -56,14 +56,17 @@
           </button>
         </div>
 
-        <div class="property-switcher" id="propertySwitcher">
-          <div class="property-icon">🏔️</div>
-          <div class="property-details">
-            <span class="property-name">Himalayan Grove</span>
-            <span class="property-meta">Manali · 18 rooms · Live</span>
+        <div class="prop-switcher-wrap">
+          <div class="property-switcher" id="propertySwitcher">
+            <div class="property-icon" id="propIcon">🏔️</div>
+            <div class="property-details">
+              <span class="property-name" id="propName">Himalayan Grove</span>
+              <span class="property-meta" id="propMeta">Manali · 18 rooms</span>
+            </div>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" id="propChevron" style="opacity:0.4;transition:transform 0.2s"><polyline points="6 9 12 15 18 9"/></svg>
+            <span class="live-pulse"></span>
           </div>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:0.4"><polyline points="6 9 12 15 18 9"/></svg>
-          <span class="live-pulse"></span>
+          <div class="property-dropdown" id="propertyDropdown" style="display:none"></div>
         </div>
 
         <nav class="nav" role="navigation">
@@ -74,7 +77,6 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
               </span>
               <span class="nav-text">Dashboard</span>
-              <span class="nav-chip green">Live</span>
             </button>
             <button class="nav-btn" data-view="calendar" id="nav-calendar">
               <span class="nav-icon">
@@ -87,7 +89,6 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               </span>
               <span class="nav-text">Guest CRM</span>
-              <span class="nav-chip teal">128</span>
             </button>
           </div>
 
@@ -105,7 +106,6 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
               </span>
               <span class="nav-text">Dynamic Pricing</span>
-              <span class="nav-chip purple">AI</span>
             </button>
           </div>
 
@@ -116,7 +116,7 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
               </span>
               <span class="nav-text">Housekeeping</span>
-              <span class="nav-chip red">5</span>
+              <span class="nav-chip red">5 pending</span>
             </button>
             <button class="nav-btn" data-view="billing" id="nav-billing">
               <span class="nav-icon">
@@ -199,8 +199,8 @@
         <section class="view active" id="view-dashboard">
           <div class="page-hero">
             <div>
-              <h1 class="page-title">Good evening, Vansh<span class="serif-em">.</span></h1>
-              <p class="page-sub">Himalayan Grove is running at <strong style="color:var(--teal)">78% occupancy</strong> tonight — above the Manali average.</p>
+              <h1 class="page-title" id="dashTitle">14 of 18 rooms occupied<span class="serif-em">.</span></h1>
+              <p class="page-sub">2 checkouts before noon &middot; 7 check-ins expected by 6 PM &middot; <span style="color:var(--teal)">+6% vs last week</span></p>
             </div>
             <div class="hero-actions">
               <button class="ghost-btn" onclick="navigate('analytics')">View Report ↗</button>
@@ -630,7 +630,7 @@
         <button class="ghost-btn" id="cancelModal">Cancel</button>
         <button class="cta-btn magnetic-btn" id="confirmBooking">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          Confirm & Send WhatsApp
+          Confirm Booking
         </button>
       </div>
     </div>
@@ -638,6 +638,23 @@
 
   <!-- ── TOASTS ── -->
   <div class="toast-stack" id="toastStack" role="status" aria-live="polite"></div>
+
+  <!-- ⌘K Command Palette -->
+  <div class="cmd-backdrop" id="cmdBackdrop" style="display:none" role="dialog" aria-modal="true" aria-label="Command palette">
+    <div class="cmd-palette">
+      <div class="cmd-search-row">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="cmd-input" id="cmdInput" type="text" placeholder="Jump to a view, room, or guest…" autocomplete="off" spellcheck="false" />
+        <kbd class="cmd-esc">Esc</kbd>
+      </div>
+      <div class="cmd-results" id="cmdResults"></div>
+      <div class="cmd-footer">
+        <span><kbd>↑↓</kbd> navigate</span>
+        <span><kbd>↵</kbd> select</span>
+        <span><kbd>Esc</kbd> close</span>
+      </div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>

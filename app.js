@@ -6,6 +6,14 @@
 
 'use strict';
 
+// ── PROPERTIES ────────────────────────────────────────────
+const PROPERTIES = [
+  { id: 'himalayan-grove', icon: '🏔️', name: 'Himalayan Grove', city: 'Manali', rooms: 18 },
+  { id: 'gateway-sands',   icon: '🌊', name: 'Gateway Sands',   city: 'Goa',    rooms: 45 },
+  { id: 'capital-suites',  icon: '🏙️', name: 'Capital Suites',  city: 'Delhi',  rooms: 120 },
+];
+let currentProperty = PROPERTIES[0];
+
 // ── DATA ──────────────────────────────────────────────────
 const ROOMS = [
   {id:101,type:'Deluxe Mtn View'},{id:102,type:'Deluxe Mtn View'},{id:103,type:'Standard'},
@@ -147,6 +155,74 @@ const COMPETITORS = [
   {name:'Himalayan Club',rate:'₹8,600',diff:'Comparable rates',type:'higher'},
   {name:'Rocky Meadows',rate:'₹6,800',diff:'You\'re ₹1,700 higher',type:'lower'},
 ];
+
+// ── PROPERTY SWITCHER ─────────────────────────────────────
+function togglePropertyDropdown() {
+  const dd = document.getElementById('propertyDropdown');
+  const chevron = document.getElementById('propChevron');
+  if (!dd) return;
+  const open = dd.style.display !== 'none' && dd.style.display !== '';
+  if (open) {
+    closePropertyDropdown();
+  } else {
+    renderPropertyDropdown();
+    dd.style.display = 'block';
+    if (chevron) chevron.style.transform = 'rotate(180deg)';
+  }
+}
+
+function closePropertyDropdown() {
+  const dd = document.getElementById('propertyDropdown');
+  const chevron = document.getElementById('propChevron');
+  if (dd) dd.style.display = 'none';
+  if (chevron) chevron.style.transform = 'rotate(0deg)';
+}
+
+function renderPropertyDropdown() {
+  const dd = document.getElementById('propertyDropdown');
+  if (!dd) return;
+  dd.innerHTML = PROPERTIES.map(p => `
+    <div class="prop-item ${p.id === currentProperty.id ? 'active' : ''}" data-pid="${p.id}">
+      <div class="prop-item-icon">${p.icon}</div>
+      <div class="prop-item-details">
+        <div class="prop-item-name">${p.name}</div>
+        <div class="prop-item-meta">${p.city} · ${p.rooms} rooms</div>
+      </div>
+      ${p.id === currentProperty.id ? '<div class="prop-item-check">✓</div>' : ''}
+    </div>
+  `).join('');
+  dd.querySelectorAll('.prop-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const prop = PROPERTIES.find(p => p.id === item.dataset.pid);
+      if (prop) switchProperty(prop);
+    });
+  });
+}
+
+function switchProperty(prop) {
+  if (prop.id === currentProperty.id) { closePropertyDropdown(); return; }
+  currentProperty = prop;
+
+  const iconEl = document.getElementById('propIcon');
+  const nameEl = document.getElementById('propName');
+  const metaEl = document.getElementById('propMeta');
+
+  // Spring blur → update → unblur transition
+  [nameEl, metaEl].forEach(el => {
+    if (el) { el.style.transition = 'filter 0.12s ease, opacity 0.12s ease'; el.style.filter = 'blur(5px)'; el.style.opacity = '0'; }
+  });
+  setTimeout(() => {
+    if (iconEl) iconEl.textContent = prop.icon;
+    if (nameEl) nameEl.textContent = prop.name;
+    if (metaEl) metaEl.textContent = `${prop.city} · ${prop.rooms} rooms`;
+    [nameEl, metaEl].forEach(el => {
+      if (el) { el.style.filter = 'blur(0)'; el.style.opacity = '1'; }
+    });
+  }, 120);
+
+  closePropertyDropdown();
+  showToast('info', prop.name, `Switched to ${prop.city} · ${prop.rooms} rooms`);
+}
 
 // ── CHART INSTANCES ────────────────────────────────────────
 const charts = {};
@@ -939,14 +1015,138 @@ function updateTotal() {
 }
 
 // ══════════════════════════════════════════════════════════
+// COMMAND PALETTE
+// ══════════════════════════════════════════════════════════
+const CMD_ITEMS = [
+  { group: 'Navigate', icon: '⬛', label: 'Dashboard',           action: () => navigate('dashboard') },
+  { group: 'Navigate', icon: '📅', label: 'Booking Calendar',    action: () => navigate('calendar') },
+  { group: 'Navigate', icon: '👥', label: 'Guest CRM',           action: () => navigate('guests') },
+  { group: 'Navigate', icon: '💬', label: 'WhatsApp Concierge',  action: () => navigate('whatsapp') },
+  { group: 'Navigate', icon: '📈', label: 'Dynamic Pricing',     action: () => navigate('pricing') },
+  { group: 'Navigate', icon: '🧹', label: 'Housekeeping',        action: () => navigate('housekeeping') },
+  { group: 'Navigate', icon: '🧾', label: 'Billing & GST',       action: () => navigate('billing') },
+  { group: 'Navigate', icon: '📊', label: 'Analytics',           action: () => navigate('analytics') },
+  { group: 'Navigate', icon: '⚙️', label: 'Settings',            action: () => navigate('settings') },
+  { group: 'Actions',  icon: '➕', label: 'New Booking',         action: openModal },
+  { group: 'Actions',  icon: '🔔', label: 'Notifications',       action: () => document.getElementById('notifBtn')?.click() },
+  { group: 'Properties', icon: '🏔️', label: 'Himalayan Grove · Manali', action: () => switchProperty(PROPERTIES[0]) },
+  { group: 'Properties', icon: '🌊', label: 'Gateway Sands · Goa',       action: () => switchProperty(PROPERTIES[1]) },
+  { group: 'Properties', icon: '🏙️', label: 'Capital Suites · Delhi',    action: () => switchProperty(PROPERTIES[2]) },
+];
+
+let cmdFocusIdx = -1;
+
+function openCmdPalette() {
+  const bd = document.getElementById('cmdBackdrop');
+  if (!bd) return;
+  bd.style.display = 'flex';
+  cmdFocusIdx = -1;
+  setTimeout(() => {
+    const input = document.getElementById('cmdInput');
+    if (input) { input.value = ''; input.focus(); }
+    renderCmdResults('');
+  }, 30);
+}
+
+function closeCmdPalette() {
+  const bd = document.getElementById('cmdBackdrop');
+  if (bd) bd.style.display = 'none';
+  cmdFocusIdx = -1;
+}
+
+function fuzzyMatch(str, query) {
+  if (!query) return true;
+  const s = str.toLowerCase();
+  const q = query.toLowerCase();
+  let si = 0;
+  for (let qi = 0; qi < q.length; qi++) {
+    while (si < s.length && s[si] !== q[qi]) si++;
+    if (si >= s.length) return false;
+    si++;
+  }
+  return true;
+}
+
+function renderCmdResults(query) {
+  const el = document.getElementById('cmdResults');
+  if (!el) return;
+  cmdFocusIdx = -1;
+
+  const filtered = CMD_ITEMS.filter(item => fuzzyMatch(item.label, query));
+  if (!filtered.length) {
+    el.innerHTML = `<div class="cmd-empty">No results for "${query}"</div>`;
+    return;
+  }
+
+  const groups = {};
+  filtered.forEach(item => {
+    if (!groups[item.group]) groups[item.group] = [];
+    groups[item.group].push(item);
+  });
+
+  el.innerHTML = Object.entries(groups).map(([group, items]) => `
+    <div class="cmd-result-group">${group}</div>
+    ${items.map(item => `
+      <div class="cmd-item" data-label="${item.label}" role="button" tabindex="-1">
+        <div class="cmd-item-icon">${item.icon}</div>
+        <div class="cmd-item-label">${item.label}</div>
+      </div>
+    `).join('')}
+  `).join('');
+
+  el.querySelectorAll('.cmd-item').forEach((node, i) => {
+    node.addEventListener('click', () => {
+      closeCmdPalette();
+      filtered[i].action();
+    });
+    node.addEventListener('mouseenter', () => {
+      cmdFocusIdx = i;
+      updateCmdFocus(el.querySelectorAll('.cmd-item'));
+    });
+  });
+}
+
+function updateCmdFocus(items) {
+  items.forEach((item, i) => item.classList.toggle('focused', i === cmdFocusIdx));
+  const f = items[cmdFocusIdx];
+  if (f) f.scrollIntoView({ block: 'nearest' });
+}
+
+function initCmdPalette() {
+  const input = document.getElementById('cmdInput');
+  if (!input) return;
+  input.addEventListener('input', () => renderCmdResults(input.value.trim()));
+  input.addEventListener('keydown', e => {
+    const items = document.querySelectorAll('.cmd-item');
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      cmdFocusIdx = Math.min(cmdFocusIdx + 1, items.length - 1);
+      updateCmdFocus(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      cmdFocusIdx = Math.max(cmdFocusIdx - 1, 0);
+      updateCmdFocus(items);
+    } else if (e.key === 'Enter') {
+      const f = document.querySelector('.cmd-item.focused');
+      if (f) f.click();
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════
 // TOAST
 // ══════════════════════════════════════════════════════════
 function showToast(type, title, msg) {
-  const icons = { success:'✅', info:'ℹ️', warning:'⚠️', error:'❌' };
+  const svgIcons = {
+    success: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--green)"><polyline points="20 6 9 17 4 12"/></svg>`,
+    info:    `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--teal)"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+    warning: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--amber)"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+    error:   `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--red)"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+  };
   const stack = document.getElementById('toastStack');
   const el = document.createElement('div');
   el.className = `toast ${type}`;
-  el.innerHTML = `<div class="toast-ico">${icons[type]}</div><div class="toast-body"><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div>`;
+  el.innerHTML = `<div class="toast-ico">${svgIcons[type] || ''}</div><div class="toast-body"><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div>`;
   stack.appendChild(el);
   setTimeout(() => {
     el.classList.add('out');
@@ -1006,13 +1206,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Keyboard shortcut for search
+  // Property switcher
+  document.getElementById('propertySwitcher')?.addEventListener('click', togglePropertyDropdown);
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#propertySwitcher') && !e.target.closest('#propertyDropdown')) {
+      closePropertyDropdown();
+    }
+  });
+
+  // Command palette — open on ⌘K or clicking search bar
+  document.getElementById('searchBar')?.addEventListener('click', openCmdPalette);
+  document.getElementById('cmdBackdrop')?.addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeCmdPalette();
+  });
+  initCmdPalette();
+
+  // Keyboard shortcuts
   document.addEventListener('keydown', e => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
       e.preventDefault();
-      document.getElementById('globalSearch')?.focus();
+      openCmdPalette();
+      return;
     }
-    if (e.key === 'Escape') closeModal();
+    if (e.key === 'Escape') {
+      const bd = document.getElementById('cmdBackdrop');
+      if (bd && bd.style.display === 'flex') { closeCmdPalette(); return; }
+      closeModal();
+    }
   });
 
   // Init first view
@@ -1022,7 +1242,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMagnetic();
 
   // Welcome toasts
-  setTimeout(() => showToast('success','Welcome back, Vansh! 👋','Himalayan Grove is at 78% tonight'), 600);
-  setTimeout(() => showToast('info','AI Concierge ✦','22/24 guest queries resolved by AI today'), 1800);
-  setTimeout(() => showToast('warning','Action needed','Rohit Gupta needs GST invoice urgently'), 3200);
+  setTimeout(() => showToast('success', 'Welcome back, Vansh', 'Himalayan Grove is at 78% occupancy tonight'), 600);
+  setTimeout(() => showToast('info', 'AI Concierge active', '22 of 24 guest queries resolved automatically today'), 1800);
+  setTimeout(() => showToast('warning', 'Action needed', 'Rohit Gupta is waiting on a GST invoice — Room 104'), 3200);
 });
