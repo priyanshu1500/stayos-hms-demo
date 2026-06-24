@@ -89,38 +89,16 @@ body {
   overflow: hidden;
   height: 100vh;
   -webkit-font-smoothing: antialiased;
-  cursor: none;
+  cursor: pointer;
 }
 
 /* ══════════════════════════════
    CUSTOM CURSOR
 ══════════════════════════════ */
-.cursor-dot {
-  position: fixed; z-index: 9999; pointer-events: none;
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--teal);
-  transform: translate(-50%,-50%);
-  transition: width 0.15s, height 0.15s, background 0.15s;
-  mix-blend-mode: difference;
-}
-.cursor-ring {
-  position: fixed; z-index: 9998; pointer-events: none;
-  width: 32px; height: 32px; border-radius: 50%;
-  border: 1.5px solid rgba(0,200,150,0.5);
-  transform: translate(-50%,-50%);
-  transition: transform 0.08s var(--ease), width 0.2s var(--ease-spring), height 0.2s var(--ease-spring), border-color 0.15s;
-  will-change: transform;
-}
-body:has(a:hover,.nav-btn:hover,.cta-btn:hover,.magnetic-btn:hover) .cursor-dot {
-  width: 12px; height: 12px;
-}
-body:has(a:hover,.nav-btn:hover,.cta-btn:hover,.magnetic-btn:hover) .cursor-ring {
-  width: 48px; height: 48px;
-  border-color: rgba(0,200,150,0.8);
-}
-/* allow default cursor on inputs */
+.cursor-dot, .cursor-ring { display: none; }
+body { cursor: auto; }
 input, select, textarea { cursor: text; }
-button, a, [role="button"] { cursor: none; }
+button, a, [role="button"] { cursor: pointer; }
 
 /* ══════════════════════════════
    NOISE OVERLAY
@@ -216,7 +194,7 @@ button, a, [role="button"] { cursor: none; }
 }
 .brand-sub { display: block; font-size: 10px; color: var(--t3); white-space: nowrap; }
 .sidebar-pin {
-  background: none; border: none; color: var(--t3); cursor: none;
+  background: none; border: none; color: var(--t3); cursor: pointer;
   padding: 4px; border-radius: 6px; flex-shrink:0;
   transition: color 0.15s, background 0.15s;
 }
@@ -227,7 +205,7 @@ button, a, [role="button"] { cursor: none; }
   display: flex; align-items: center; gap: 8px;
   padding: 10px 10px; border-radius: var(--r-md);
   background: var(--glass); border: 1px solid var(--glass-b);
-  cursor: none; margin-bottom: 16px;
+  cursor: pointer; margin-bottom: 16px;
   transition: background 0.15s; position: relative;
   overflow: hidden;
 }
@@ -265,7 +243,7 @@ button, a, [role="button"] { cursor: none; }
   display: flex; align-items: center; gap: 9px;
   width: 100%; padding: 8px 10px;
   background: none; border: none; border-radius: var(--r-sm);
-  color: var(--t3); cursor: none; font-size: 13px; font-weight: 500;
+  color: var(--t3); cursor: pointer; font-size: 13px; font-weight: 500;
   text-align: left; white-space: nowrap;
   transition: background var(--dur-fast) var(--ease),
               color var(--dur-fast) var(--ease),
@@ -309,7 +287,7 @@ button, a, [role="button"] { cursor: none; }
 .user-card {
   display: flex; align-items: center; gap: 9px;
   padding: 8px 10px; border-radius: var(--r-sm);
-  cursor: none; transition: background 0.15s;
+  cursor: pointer; transition: background 0.15s;
   position: relative;
 }
 .user-card:hover { background: var(--glass); }
@@ -410,7 +388,7 @@ button, a, [role="button"] { cursor: none; }
 .tb-icon-btn {
   position: relative;
   background: var(--glass); border: 1px solid var(--glass-b);
-  color: var(--t2); cursor: none; padding: 7px;
+  color: var(--t2); cursor: pointer; padding: 7px;
   border-radius: 8px; display:flex; align-items:center;
   transition: all 0.15s;
 }
@@ -429,7 +407,7 @@ button, a, [role="button"] { cursor: none; }
   padding: 8px 16px; border-radius: 9px; border: none;
   background: linear-gradient(135deg, var(--teal), #00A878);
   color: #001c14; font-size: 13px; font-weight: 700;
-  cursor: none; white-space: nowrap;
+  cursor: pointer; white-space: nowrap;
   transition: transform var(--dur-base) var(--spring-smooth),
               box-shadow var(--dur-base) var(--ease),
               opacity var(--dur-fast) var(--ease);
@@ -450,7 +428,7 @@ button, a, [role="button"] { cursor: none; }
   padding: 7px 14px; border-radius: 9px;
   background: var(--glass); border: 1px solid var(--glass-b);
   color: var(--t2); font-size: 13px; font-weight: 500;
-  cursor: none; white-space: nowrap;
+  cursor: pointer; white-space: nowrap;
   transition: transform var(--dur-base) var(--spring-smooth),
               background var(--dur-fast),
               border-color var(--dur-fast),
@@ -461,7 +439,7 @@ button, a, [role="button"] { cursor: none; }
 
 .ghost-mini {
   background: none; border: none; color: var(--teal);
-  font-size: 11px; cursor: none; padding: 2px 6px; border-radius: 6px;
+  font-size: 11px; cursor: pointer; padding: 2px 6px; border-radius: 6px;
   transition: background 0.15s;
 }
 .ghost-mini:hover { background: var(--teal-glow); }
@@ -662,7 +640,7 @@ button, a, [role="button"] { cursor: none; }
 }
 .room-tile {
   border-radius: 10px; padding: 8px 6px;
-  text-align: center; cursor: none;
+  text-align: center; cursor: pointer;
   transition: all 0.15s var(--ease);
   border: 1px solid transparent;
   position: relative; overflow: hidden;
